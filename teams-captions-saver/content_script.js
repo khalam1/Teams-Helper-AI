@@ -6,7 +6,6 @@ function checkCaptions() {
     // Teams v2 
     const closedCaptionsContainer = document.querySelector("[data-tid='closed-captions-renderer']")
     if (!closedCaptionsContainer) {
-        // "Please, click 'More' > 'Language and speech' > 'Turn on life captions'"
         return;
     }
     const transcripts = closedCaptionsContainer.querySelectorAll('.ui-chat__item');
@@ -52,19 +51,10 @@ function checkCaptions() {
 }
 
 // run startTranscription every 5 seconds
-// cancel the interval if capturing is true
 function startTranscription() {
-    const meetingDurationElement = document.getElementById("call-duration-custom");
-    if (meetingDurationElement) {
-
-    } else {
-        setTimeout(startTranscription, 5000);
-        return false;
-    }
-
-    const closedCaptionsContainer = document.querySelector("[data-tid='closed-captions-renderer']")
+    const closedCaptionsContainer = document.querySelector("[data-tid='closed-captions-renderer']");
     if (!closedCaptionsContainer) {
-        console.log("Please, click 'More' > 'Language and speech' > 'Turn on life captions'");
+        console.log("Please, click 'More' > 'Language and speech' > 'Turn on live captions'");
         setTimeout(startTranscription, 5000);
         return false;
     }
@@ -76,15 +66,19 @@ function startTranscription() {
         subtree: true
     });
 
+    // Update meeting minutes every 5 minutes
+    setInterval(() => {
+        console.log("Meeting minutes update:", transcriptArray);
+    }, 300000); // 5 minutes interval
+
     return true;
 }
 
 startTranscription();
 
-// Listen for messages from the service_worker.js script.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch (request.message) {  // message from service_worker.js      
-        case 'return_transcript': // message from service_worker.js
+    switch (request.message) {
+        case 'return_transcript':
             console.log("response:", transcriptArray);
             if (!capturing) {
                 alert("Oops! No captions were captured. Please, try again.");
@@ -98,11 +92,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 meetingTitle: meetingTitle
             });
 
-
         default:
             break;
     }
-
 });
-
-console.log("content_script.js is running");
